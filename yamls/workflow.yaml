@@ -1,0 +1,14 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: pipeline
+spec:
+  entrypoint: pipeline-template
+  volumes:
+  - name: workdir
+    persistentVolumeClaim:
+      claimName: pipeline-shared-storage-claim
+      
+  templates:
+  - name: pipeline-template
+    steps:

@@ -1,0 +1,8 @@
+name: name
+  container:
+    image: alu0101040882/scikit
+    command: [python, -c]
+    args: [""]
+    volumeMounts:
+    - name: workdir
+      mountPath: /mnt/vol
