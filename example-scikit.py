@@ -41,7 +41,9 @@ model = fit(X_train,y_train)
 
 
 #Recursos en pipeline.config
-pipeline.config( resources = {"memory" :  "100Mi"})
+pipeline.config( resources = {"memory" :  "100Mi"}, function_resources = { LogisticRegression()     : {"memory" :  "200Mi"}, 
+                                                                           RandomForestClassifier() : {"memory" :  "50Mi" } } )
+                                                                           
 model = pipeline.fit(X_train,y_train)
 
 print("Precision del pipeline : {} %".format( model.score(X_test,y_test)))

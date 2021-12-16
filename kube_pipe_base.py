@@ -46,6 +46,8 @@ class Kube_pipe_base:
 
         self.kuberesources = None
 
+        self.functionresources = None
+
         atexit.register(self.deleteTemporaryFiles)
 
 
@@ -53,8 +55,9 @@ class Kube_pipe_base:
         return Kube_pipe_base(*args)
 
 
-    def config(self, resources = None):
+    def config(self, resources = None,function_resources = None):
         self.kuberesources = resources
+        self.functionresources = function_resources
 
 
     def launchFromManifest(self,manifest):
@@ -81,7 +84,7 @@ class Kube_pipe_base:
             workflow = self.api.workflow_service_get_workflow(namespace="argo",name = workflowName)
             status = workflow["status"]
 
-
+        
             if(getattr(status,"phase",None) is not None):
 
                 if(status["phase"] == "Running"):

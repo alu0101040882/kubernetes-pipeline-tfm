@@ -8,7 +8,7 @@ from openapi_client.model.io_argoproj_workflow_v1alpha1_workflow_create_request 
     IoArgoprojWorkflowV1alpha1WorkflowCreateRequest
 import uuid
 
-from kube_pipe_base import Kube_pipe_base
+from kube_pipe_base import Kube_pipe_base, kubeconfig
 
 VOLUME_PATH = "/home/ansible/.kubetmp/"
 
@@ -20,9 +20,13 @@ class Kube_pipe(Kube_pipe_base):
 
     def __init__(self,*args):
         super().__init__(*args)
+        self.functionresources = {}
 
+    def config(self, resources = None,function_resources = None):
+        self.kuberesources = resources
+        self.functionresources = function_resources
 
-    def workflow(self,X,y,funcs,name,pipeid,transformer,resources = None):
+    def workflow(self,X,y,funcs,name,pipeid,transformer, resources = None):
 
         with open(f'{VOLUME_PATH}X{pipeid}.tmp', 'wb') as handle:
                 pickle.dump(X, handle, protocol=pickle.HIGHEST_PROTOCOL)
@@ -52,6 +56,7 @@ class Kube_pipe(Kube_pipe_base):
             #Importar entradas
             code = f"""
 import pickle
+import pandas
 
 with open(\'X{pipeid}.tmp\', \'rb\') as input_file:
     X = pickle.load(input_file)
@@ -104,6 +109,10 @@ with open('out{pipeid}.tmp', \'wb\') as handle:
 
             if(resources is None):
                 resources = self.kuberesources
+
+            if(self.functionresources.get(func,None) is not None):
+                resources = self.functionresources.get(func)
+
             if(resources is not None):
                 template["container"]["resources"]  = {"limits" : resources}
 
