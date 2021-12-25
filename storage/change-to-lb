@@ -1,0 +1,2 @@
+kubectl patch svc argo-server -n argo -p '{"spec": {"type": "LoadBalancer"}}'
+kubectl patch svc minio -n argo -p '{"spec": {"type": "LoadBalancer"}}'

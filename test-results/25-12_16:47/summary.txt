@@ -1,0 +1,13 @@
+Results of pipelines 
+100 samples:
+Scikit Pipeline:    	 0:00:05.078643  (5.078643321990967 seconds)
+Kubernetes Pipeline:	 0:01:36.372285  (96.37228465080261 seconds)
+Speedup:            	 0.052698172927964
+
+1000 samples:
+Scikit Pipeline:    	 0:00:48.294234  (48.29423379898071 seconds)
+Kubernetes Pipeline:	 0:01:00.270442  (60.27044224739075 seconds)
+Speedup:            	 0.8012921757027839
+
+2000 samples:
+Scikit Pipeline:    	 0:03:04.568599  (184.56859874725342 seconds)

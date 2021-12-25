@@ -3,6 +3,9 @@ kind: Workflow
 metadata:
   generateName: pipeline
 spec:
+  ttlStrategy:
+
+    secondsAfterSuccess: 20
   entrypoint: pipeline-template
   volumes:
   - name: workdir

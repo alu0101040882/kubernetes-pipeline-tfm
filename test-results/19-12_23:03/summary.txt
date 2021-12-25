@@ -1,0 +1,3 @@
+Results of pipelines 
+100 samples:
+Scikit Pipeline:    	 0:00:01.259848  (1.2598481178283691 seconds)

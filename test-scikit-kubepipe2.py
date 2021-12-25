@@ -1,25 +1,20 @@
 
-
-
-from os import pipe
-from sklearn.linear_model import LogisticRegression
-from sklearn.preprocessing import StandardScaler
-from sklearn.naive_bayes import GaussianNB
-from sklearn.ensemble import RandomForestClassifier
-import numpy as np
 import pandas as pd
 from sklearn.pipeline import make_pipeline
-from sklearn.model_selection import train_test_split
+
 from sklearn import datasets
 
 from kube_pipe_scikit import Kube_pipe, make_kube_pipeline
-from sklearn.tree import DecisionTreeClassifier
+
 import os
 
 import time
 import datetime
 
+from sklearn.preprocessing import StandardScaler
 
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
@@ -32,11 +27,9 @@ from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 
 import csv
 
-datasets.fetch_california_housing
-
 workdir = f"{os.path.dirname(os.path.realpath(__file__))}/test-results"
 
-test_samples = [100, 1000]
+test_samples = [100,1000,2000,4000,5000,10000,20000,30000,40000,50000,100000]
 
 
 NUMBER_OF_FEATURES = 10
@@ -51,10 +44,11 @@ kubepipelines = make_kube_pipeline(
                                     [StandardScaler(), RandomForestClassifier()],
                                     [StandardScaler(), GaussianProcessClassifier(1.0 * RBF(1.0))],
                                     [StandardScaler(), SVC(gamma=2, C=1)],
-                                    [StandardScaler(), SVC(kernel="linear", C=0.025)],
                                     [StandardScaler(), AdaBoostClassifier()],
                                     [StandardScaler(), GaussianNB()],
-                                    [StandardScaler(), QuadraticDiscriminantAnalysis()]
+                                    [StandardScaler(), QuadraticDiscriminantAnalysis()],
+                                    [StandardScaler(), MLPClassifier()],
+                                    [StandardScaler(), KNeighborsClassifier()]
                                     
                                 )
 
@@ -65,10 +59,11 @@ scikitPipelines =   [
                         make_pipeline(StandardScaler(), RandomForestClassifier()),
                         make_pipeline(StandardScaler(), GaussianProcessClassifier(1.0 * RBF(1.0))),
                         make_pipeline(StandardScaler(), SVC(gamma=2, C=1)),
-                        make_pipeline(StandardScaler(), SVC(kernel="linear", C=0.025)),
                         make_pipeline(StandardScaler(), AdaBoostClassifier()),
                         make_pipeline(StandardScaler(), GaussianNB()),
-                        make_pipeline(StandardScaler(), QuadraticDiscriminantAnalysis())
+                        make_pipeline(StandardScaler(), QuadraticDiscriminantAnalysis()),
+                        make_pipeline(StandardScaler(), MLPClassifier()),
+                        make_pipeline(StandardScaler(), KNeighborsClassifier())
                         
                     ]
 
@@ -88,6 +83,7 @@ def test(pipelines,testTimes,X_train,y_train):
 
         if(isinstance(pipelines,Kube_pipe)):
             pipelines.fit(X_train,y_train)
+            pipelines.deleteTemporaryFiles()
         else:
             for pipeline in pipelines:
                 pipeline.fit(X_train, y_train)
@@ -119,32 +115,37 @@ with open(f"{workdir}/{now}/csv/speedup.csv", "a") as file:
     writer.writerow(["Speed Up"])
 
 
+
+scikitTimes = []
+kubeTimes = []
+speedUps = []
+
 try:
-    with open(f"{workdir}/{now}/resumen.txt", "a") as f:
+    with open(f"{workdir}/{now}/summary.txt", "a") as f:
         f.write(f"Results of pipelines \n")
 
-        for n_sample in test_samples:
+        for i , n_sample in enumerate(test_samples):
             X, y = datasets.make_classification(n_samples=n_sample,n_features=NUMBER_OF_FEATURES)
             f.write(f"{n_sample} samples:\n")
 
-            scikitTime = mean(test(scikitPipelines,NUMBER_OF_TEST,X,y))
-            f.write(f"Scikit Pipeline:    \t {str(datetime.timedelta(seconds=scikitTime))}  ({scikitTime} seconds)\n")
+            scikitTimes.append(mean(test(scikitPipelines,NUMBER_OF_TEST,X,y)))
+            f.write(f"Scikit Pipeline:    \t {str(datetime.timedelta(seconds=scikitTimes[i]))}  ({scikitTimes[i]} seconds)\n")
 
-            kubeTime = mean(test(kubepipelines,NUMBER_OF_TEST,X,y))
-            f.write(f"Kubernetes Pipeline:\t {str(datetime.timedelta(seconds=kubeTime))}  ({kubeTime} seconds)\n")
+            kubeTimes.append(mean(test(kubepipelines,NUMBER_OF_TEST,X,y)))
+            f.write(f"Kubernetes Pipeline:\t {str(datetime.timedelta(seconds=kubeTimes[i]))}  ({kubeTimes[i]} seconds)\n")
 
-            speedUp = scikitTime/kubeTime
-            f.write(f"Speedup:            \t {speedUp}\n\n")
+            speedUps.append(scikitTimes[i]/kubeTimes[i])
+            f.write(f"Speedup:            \t {speedUps[i]}\n\n")
 
-            print(f"samples:{n_sample}\nscikit: {scikitTime}\nkubernetes: {kubeTime}\nspeedup:{speedUp}\n\n")
+            print(f"samples:{n_sample}\nscikit: {scikitTimes[i]}\nkubernetes: {kubeTimes[i]}\nspeedup:{speedUps[i]}\n\n")
 
             with open(f"{workdir}/{now}/csv/times.csv", "a") as file:
                 writer = csv.writer(file)
-                writer.writerow([scikitTime,kubeTime])
+                writer.writerow([n_sample,scikitTimes[i],kubeTimes[i]])
 
             with open(f"{workdir}/{now}/csv/speedup.csv", "a") as file:
                 writer = csv.writer(file)
-                writer.writerow([speedUp])
+                writer.writerow([n_sample,speedUps[i]])
         
             f.flush()
             os.fsync(f)
@@ -154,12 +155,25 @@ finally:
     import matplotlib.pyplot as plt
     import pandas as pd
 
-    speedup = pd.read_csv(f"{workdir}/{now}/csv/speedup.csv")
+    y_labels = []
 
-    times = pd.read_csv(f"{workdir}/{now}/csv/times.csv")
+    for sample in test_samples:
+        y_labels.append(str(sample))
 
-    speedup.plot()
+    plt.figure()
+    plt.plot(y_labels[0:len(scikitTimes)], scikitTimes, label = "Scikit")
+    plt.plot(y_labels[0:len(kubeTimes)], kubeTimes, label = "Kubernetes") 
+    plt.xlabel("Nº Samples")
+    plt.ylabel("Time (s)")
+    plt.legend()
+    plt.savefig(f"{workdir}/{now}/plots/times-plot.png")
+
+
+    plt.figure()
+    plt.plot(y_labels[0:len(speedUps)], speedUps, label = "speedups")
+    plt.xlabel("Nº Samples")
+    plt.ylabel("SpeedUp")
+    plt.legend()
     plt.savefig(f"{workdir}/{now}/plots/speedup-plot.png")
 
-    times.plot()
-    plt.savefig(f"{workdir}/{now}/plots/times-plot.png")
+    

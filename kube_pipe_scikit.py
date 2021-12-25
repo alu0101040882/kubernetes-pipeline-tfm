@@ -1,11 +1,15 @@
 import os
+from time import sleep
 import yaml
 import pickle as pickle
 import pandas as pd
-import openapi_client
-from openapi_client.api import workflow_service_api
-from openapi_client.model.io_argoproj_workflow_v1alpha1_workflow_create_request import \
+
+import argo_workflows
+from argo_workflows.api import workflow_service_api
+from argo_workflows.model.io_argoproj_workflow_v1alpha1_workflow_create_request import \
     IoArgoprojWorkflowV1alpha1WorkflowCreateRequest
+
+
 import uuid
 
 from kube_pipe_base import Kube_pipe_base, kubeconfig
@@ -141,10 +145,26 @@ with open('out{pipeid}.tmp', \'wb\') as handle:
 
             workflowNames.append(self.workflow(X,y,pipeline,"workflow-fit-",self.pipeIds[i],False,resources = resources))
 
+
+        self.waitForWorkflows(workflowNames)
+
+
         for i, name in enumerate(workflowNames):
-            self.waitForWorkflow(name)
-            with open(f"{VOLUME_PATH}out{self.pipeIds[i]}.tmp","rb") as outfile:
-                self.models.append(pickle.load(outfile))
+            wait = 0
+            while True:
+                try:
+                    with open(f"{VOLUME_PATH}out{self.pipeIds[i]}.tmp","rb") as outfile:
+                        self.models.append(pickle.load(outfile))
+                        break
+
+                except FileNotFoundError as e:
+                    print("FileNotFound: " + f"{VOLUME_PATH}out{self.pipeIds[i]}.tmp")
+                    sleep(0.5)
+                    wait+=1
+                    if(wait == 10):
+                        raise e
+
+        self.deleteTemporaryFiles()
 
         return self
 
@@ -165,8 +185,10 @@ with open('out{pipeid}.tmp', \'wb\') as handle:
         for index in pipeIndex:
                 workflowNames.append(self.workflow(X,y,self.pipelines[index][:-1],"workflow-score-",self.pipeIds[index],True))
 
+
+        self.waitForWorkflows(workflowNames)
+
         for i,index in enumerate(pipeIndex):
-            self.waitForWorkflow(workflowNames[i])
 
             with open(f"{VOLUME_PATH}X{self.pipeIds[index]}.tmp","rb") as outfile:
                     testX = pickle.load(outfile)
@@ -176,7 +198,8 @@ with open('out{pipeid}.tmp', \'wb\') as handle:
 
             scores.append(self.models[index].score(testX,testy))
 
-    
+
+        self.deleteTemporaryFiles()
         return scores
         
 
