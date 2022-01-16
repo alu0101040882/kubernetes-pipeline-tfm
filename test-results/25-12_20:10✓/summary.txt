@@ -1,0 +1,39 @@
+El proceso fue parado por una falta de memoria durante la ejecucion de sklearn con 20000 muestras
+Realizado con Lr,Dtree,Randomf,GaussianProcess,svc
+
+Results of pipelines 
+100 samples:
+Scikit Pipeline:    	 0:00:06.882099  (6.882098913192749 seconds)
+Kubernetes Pipeline:	 0:00:53.846346  (53.84634590148926 seconds)
+Speedup:            	 0.1278099525227469
+
+1000 samples:
+Scikit Pipeline:    	 0:01:29.169569  (89.16956949234009 seconds)
+Kubernetes Pipeline:	 0:01:08.730272  (68.73027181625366 seconds)
+Speedup:            	 1.2973842112938194
+
+2000 samples:
+Scikit Pipeline:    	 0:02:56.836160  (176.83615970611572 seconds)
+Kubernetes Pipeline:	 0:01:34.716672  (94.71667218208313 seconds)
+Speedup:            	 1.867001401465692
+
+3000 samples:
+Scikit Pipeline:    	 0:11:08.214414  (668.214414358139 seconds)
+Kubernetes Pipeline:	 0:04:25.533956  (265.53395557403564 seconds)
+Speedup:            	 2.5164932782836837
+
+4000 samples:
+Scikit Pipeline:    	 0:12:45.539589  (765.5395891666412 seconds)
+Kubernetes Pipeline:	 0:09:19.071367  (559.0713670253754 seconds)
+Speedup:            	 1.3693056634966152
+
+5000 samples:
+Scikit Pipeline:    	 0:18:32.751454  (1112.7514543533325 seconds)
+Kubernetes Pipeline:	 0:10:17.328785  (617.3287854194641 seconds)
+Speedup:            	 1.8025264342683087
+
+10000 samples:
+Scikit Pipeline:    	 2:30:38.580757  (9038.580756902695 seconds)
+Kubernetes Pipeline:	 1:37:18.283033  (5838.283032655716 seconds)
+Speedup:            	 1.548157344607397
+

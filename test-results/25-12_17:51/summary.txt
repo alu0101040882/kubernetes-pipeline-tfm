@@ -9,3 +9,18 @@ Scikit Pipeline:    	 0:00:48.122356  (48.12235617637634 seconds)
 Kubernetes Pipeline:	 0:01:08.619120  (68.61911988258362 seconds)
 Speedup:            	 0.7012966103138608
 
+2000 samples:
+Scikit Pipeline:    	 0:02:53.035137  (173.0351366996765 seconds)
+Kubernetes Pipeline:	 0:01:53.923201  (113.9232006072998 seconds)
+Speedup:            	 1.518875310536079
+
+4000 samples:
+Scikit Pipeline:    	 0:10:55.974751  (655.9747512340546 seconds)
+Kubernetes Pipeline:	 0:06:14.704306  (374.7043056488037 seconds)
+Speedup:            	 1.7506464199770233
+
+5000 samples:
+Scikit Pipeline:    	 0:23:37.437375  (1417.4373745918274 seconds)
+Kubernetes Pipeline:	 0:13:43.225388  (823.2253880500793 seconds)
+Speedup:            	 1.7218095981578259
+

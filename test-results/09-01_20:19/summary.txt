@@ -1,0 +1,3 @@
+Results of pipelines ['LogisticRegression', 'DecisionTreeClassifier', 'RandomForestClassifier', 'AdaBoostClassifier', 'SVC']
+100 samples:
+Scikit Pipeline:    	 0.32613563537597656 seconds

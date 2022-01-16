@@ -1,0 +1,36 @@
+Results of pipelines ['LogisticRegression', 'DecisionTreeClassifier', 'RandomForestClassifier', 'GaussianProcessClassifier', 'SVC']
+100 samples:
+Scikit Pipeline:    	 0:00:00.669944  (0.6699440479278564 seconds)
+Kubernetes Pipeline:	 0:00:42.952373  (42.952373027801514 seconds)
+Speedup:            	 0.015597369847161318
+
+1000 samples:
+Scikit Pipeline:    	 0:00:24.054005  (24.054004669189453 seconds)
+Kubernetes Pipeline:	 0:00:52.667647  (52.66764712333679 seconds)
+Speedup:            	 0.4567131053502338
+
+2000 samples:
+Scikit Pipeline:    	 0:01:37.192607  (97.19260716438293 seconds)
+Kubernetes Pipeline:	 0:01:50.986593  (110.98659324645996 seconds)
+Speedup:            	 0.8757148437609422
+
+3000 samples:
+Scikit Pipeline:    	 0:03:36.167062  (216.16706228256226 seconds)
+Kubernetes Pipeline:	 0:03:46.333627  (226.33362698554993 seconds)
+Speedup:            	 0.9550815102537249
+
+4000 samples:
+Scikit Pipeline:    	 0:06:11.570240  (371.5702397823334 seconds)
+Kubernetes Pipeline:	 0:05:55.968622  (355.9686222076416 seconds)
+Speedup:            	 1.043828631517952
+
+5000 samples:
+Scikit Pipeline:    	 0:11:52.461849  (712.4618492126465 seconds)
+Kubernetes Pipeline:	 0:10:46.202623  (646.2026228904724 seconds)
+Speedup:            	 1.102536300496268
+
+10000 samples:
+Scikit Pipeline:    	 1:04:09.060706  (3849.060706138611 seconds)
+Kubernetes Pipeline:	 1:17:14.644835  (4634.644834756851 seconds)
+Speedup:            	 0.8304974476734732
+

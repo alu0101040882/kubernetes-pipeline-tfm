@@ -9,7 +9,6 @@ from argo_workflows.api import workflow_service_api
 from argo_workflows.model.io_argoproj_workflow_v1alpha1_workflow_create_request import \
     IoArgoprojWorkflowV1alpha1WorkflowCreateRequest
 
-
 import uuid
 
 from kube_pipe_base import Kube_pipe_base, kubeconfig
@@ -143,11 +142,10 @@ with open('out{pipeid}.tmp', \'wb\') as handle:
         for i , pipeline in enumerate(self.pipelines):
             self.pipeIds.append(str(uuid.uuid4())[:8])
 
-            workflowNames.append(self.workflow(X,y,pipeline,"workflow-fit-",self.pipeIds[i],False,resources = resources))
+            workflowNames.append(self.workflow(X,y,pipeline,f"{i}-{str.lower(str(type(pipeline[-1]).__name__))}-fit-",self.pipeIds[i],False,resources = resources))
 
 
         self.waitForWorkflows(workflowNames)
-
 
         for i, name in enumerate(workflowNames):
             wait = 0

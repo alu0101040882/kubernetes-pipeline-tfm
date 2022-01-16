@@ -1,0 +1,31 @@
+Results of pipelines 
+100 samples:
+Scikit Pipeline:    	 0:00:07.346476  (7.346475601196289 seconds)
+Kubernetes Pipeline:	 0:00:51.728640  (51.72864007949829 seconds)
+Speedup:            	 0.14201950002756658
+
+1000 samples:
+Scikit Pipeline:    	 0:00:37.805717  (37.80571722984314 seconds)
+Kubernetes Pipeline:	 0:00:54.227510  (54.22750997543335 seconds)
+Speedup:            	 0.6971686003463968
+
+2000 samples:
+Scikit Pipeline:    	 0:03:08.355194  (188.35519409179688 seconds)
+Kubernetes Pipeline:	 0:02:08.021747  (128.02174711227417 seconds)
+Speedup:            	 1.4712749852305225
+
+3000 samples:
+Scikit Pipeline:    	 0:06:37.078665  (397.0786654949188 seconds)
+Kubernetes Pipeline:	 0:04:09.948909  (249.94890928268433 seconds)
+Speedup:            	 1.5886393208695118
+
+4000 samples:
+Scikit Pipeline:    	 0:12:21.532120  (741.5321197509766 seconds)
+Kubernetes Pipeline:	 0:07:18.114029  (438.11402893066406 seconds)
+Speedup:            	 1.6925550673665632
+
+5000 samples:
+Scikit Pipeline:    	 0:30:53.545083  (1853.545083284378 seconds)
+Kubernetes Pipeline:	 0:16:35.134097  (995.1340968608856 seconds)
+Speedup:            	 1.862608355126529
+

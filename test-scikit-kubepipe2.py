@@ -29,43 +29,36 @@ import csv
 
 workdir = f"{os.path.dirname(os.path.realpath(__file__))}/test-results"
 
-test_samples = [100,1000,2000,4000,5000,10000,20000,30000,40000,50000,100000]
+test_samples = [100,1000,2000,3000,4000,5000,10000,20000,30000,40000,50000,100000,200000,300000,400000,500000]
 
-
-NUMBER_OF_FEATURES = 10
+NUMBER_OF_FEATURES = 5
 
 NUMBER_OF_TEST = 1
 
 
-#Kubernetes pipeline
-kubepipelines = make_kube_pipeline(
-                                    [StandardScaler(), LogisticRegression()],
-                                    [StandardScaler(), DecisionTreeClassifier()],
-                                    [StandardScaler(), RandomForestClassifier()],
-                                    [StandardScaler(), GaussianProcessClassifier(1.0 * RBF(1.0))],
-                                    [StandardScaler(), SVC(gamma=2, C=1)],
-                                    [StandardScaler(), AdaBoostClassifier()],
-                                    [StandardScaler(), GaussianNB()],
-                                    [StandardScaler(), QuadraticDiscriminantAnalysis()],
-                                    [StandardScaler(), MLPClassifier()],
-                                    [StandardScaler(), KNeighborsClassifier()]
-                                    
-                                )
+clasifiers = [  
 
-#Scikit pipeline
-scikitPipelines =   [   
-                        make_pipeline(StandardScaler(), LogisticRegression()),
-                        make_pipeline(StandardScaler(), DecisionTreeClassifier()),
-                        make_pipeline(StandardScaler(), RandomForestClassifier()),
-                        make_pipeline(StandardScaler(), GaussianProcessClassifier(1.0 * RBF(1.0))),
-                        make_pipeline(StandardScaler(), SVC(gamma=2, C=1)),
-                        make_pipeline(StandardScaler(), AdaBoostClassifier()),
-                        make_pipeline(StandardScaler(), GaussianNB()),
-                        make_pipeline(StandardScaler(), QuadraticDiscriminantAnalysis()),
-                        make_pipeline(StandardScaler(), MLPClassifier()),
-                        make_pipeline(StandardScaler(), KNeighborsClassifier())
-                        
-                    ]
+                [StandardScaler(), LogisticRegression()],
+                [StandardScaler(), DecisionTreeClassifier()],
+                [StandardScaler(), RandomForestClassifier()],
+                [StandardScaler(), GaussianProcessClassifier(1.0 * RBF(1.0))],
+                [StandardScaler(), SVC(gamma=2, C=1)]
+            
+            ]
+
+
+kubepipelines = make_kube_pipeline(*clasifiers)
+
+
+scikitPipelines = []
+
+
+clasifierNames = []
+
+for clasifier in clasifiers:
+    scikitPipelines.append(make_pipeline(*clasifier))
+    clasifierNames.append(str(type(clasifier[-1]).__name__))
+
 
 def mean(arr):
     sum = 0
@@ -97,8 +90,6 @@ def test(pipelines,testTimes,X_train,y_train):
 
         return times
 
-
-randomX, randomy = datasets.make_classification(n_samples=1000000,n_features=10)
 now = datetime.datetime.now().strftime("%d-%m_%H:%M")
 
 os.mkdir(f"{workdir}/{now}")
@@ -108,12 +99,11 @@ os.mkdir(f"{workdir}/{now}/plots")
 
 with open(f"{workdir}/{now}/csv/times.csv", "a") as file:
     writer = csv.writer(file)
-    writer.writerow(["Scikit","Kubernetes"])
+    writer.writerow(["Samples","Scikit","Kubernetes"])
 
 with open(f"{workdir}/{now}/csv/speedup.csv", "a") as file:
     writer = csv.writer(file)
-    writer.writerow(["Speed Up"])
-
+    writer.writerow(["Samples","Speed Up"])
 
 
 scikitTimes = []
@@ -122,7 +112,7 @@ speedUps = []
 
 try:
     with open(f"{workdir}/{now}/summary.txt", "a") as f:
-        f.write(f"Results of pipelines \n")
+        f.write(f"Results of pipelines {clasifierNames}\n")
 
         for i , n_sample in enumerate(test_samples):
             X, y = datasets.make_classification(n_samples=n_sample,n_features=NUMBER_OF_FEATURES)
@@ -147,6 +137,8 @@ try:
                 writer = csv.writer(file)
                 writer.writerow([n_sample,speedUps[i]])
         
+            del X
+            del y
             f.flush()
             os.fsync(f)
 
